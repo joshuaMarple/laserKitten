@@ -1,10 +1,10 @@
-import pygame, sys
+import pygame, sys, random
 from pygame.locals import *
 import globalDefs
 class kitty:
     def __init__(self):
         self.kittyPic = pygame.image.load('./res/cat.png')
-        self.laser = pygame.image.load('./res/laser2.png')
+        self.laser = pygame.image.load('./res/laser.png')
         self.chargedKitty = pygame.image.load('./res/catbeam.png')
         self.antiKitty = pygame.image.load('./res/catnegbeam.png')
         self.laserdis = 0

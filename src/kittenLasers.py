@@ -2,7 +2,7 @@ import pygame, random, sys
 from pygame.locals import *
 import globalDefs
 from kitty import *
-
+from bear import *
 pygame.init()
 mainClock = pygame.time.Clock()
 windowSurface = pygame.display.set_mode((globalDefs.WINDOWWIDTH, globalDefs.WINDOWHEIGHT))
@@ -76,7 +76,7 @@ def planetChecker():
             globalDefs.planets.remove(p)
             globalDefs.EarthHealth -= p['size']/10
 
-def redraw(kit, planets):
+def redraw(kit, bear, planets):
     global window
     windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
     windowSurface.blit(globalDefs.background, (0,0))
@@ -88,8 +88,12 @@ def redraw(kit, planets):
         windowSurface.blit(p['surface'], p['rect'])
         
     kit.chargeKitty(windowSurface)
+    beary.chargeBear(windowSurface)
     windowSurface.blit(kit.kittyPic, kit.kitRect)
+    windowSurface.blit(beary.BearPic, beary.bearRect)
+
     kit.splazers(windowSurface, planets)
+    beary.splazers(windowSurface, planets)
     pygame.display.update()
 
     earthHealthIncrementer()
@@ -107,15 +111,15 @@ def earthChecker():
         earthDead()
 
 def eventChecker(event, kit):
-    global moveUp
-    global moveDown
     if event.type == QUIT:
         terminate()
     if event.type == KEYDOWN:
         if event.key == K_DOWN:
             kit.moveModder(True, False)
+            beary.moveModder(True, False)
         if event.key == K_UP:
             kit.moveModder(False, True)
+            beary.moveModder(False, True)
         if event.key == K_SPACE:
             kit.laserFire = True
     if event.type == KEYUP:
@@ -126,8 +130,10 @@ def eventChecker(event, kit):
             waitKey()
         if event.key == K_UP:
             kit.moveModder(False, False)
+            beary.moveModder(False, False)
         if event.key == K_DOWN:
             kit.moveModder(False, False)
+            beary.moveModder(False, False)
         if event.key == K_SPACE:
             kit.laserFire = False
 
@@ -142,7 +148,8 @@ pygame.display.update()
 waitKey()
 kit = kitty()
 kit.center()
-
+beary = bear()
+beary.center()
 while True:
     for event in pygame.event.get():
         eventChecker(event, kit)
@@ -151,11 +158,13 @@ while True:
     
     kit.kittyMove()
 
+    beary.BearMove()
+
     planetChecker()
 
     earthChecker()
 
     # scoreChecker()
 
-    redraw(kit, globalDefs.planets)
+    redraw(kit, beary, globalDefs.planets)
     
