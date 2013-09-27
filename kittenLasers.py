@@ -1,51 +1,35 @@
 import pygame, random, sys
 from pygame.locals import *
 
-laserdis = 50
 WINDOWWIDTH = 1000
 WINDOWHEIGHT = 600
 TEXTCOLOR = (0,0,0)
 BACKGROUNDCOLOR = (255,255,255)
 FPS = 40
 planetSize = 40
-kitMove = 15
 planetMoveMin = 2
 planetMoveMax = 8
 ADDNEWPLANETRATE = 5
 planets = []
-laserFire = False
 score = 0
 EarthHealth = 100
-kitCharge = 0
-kitNegCharge = 0
 
 pygame.init()
 mainClock = pygame.time.Clock()
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 pygame.display.set_caption('Kitten Lasers')
 pygame.mouse.set_visible(False)
-kitty = pygame.image.load('cat.png')
+kittyPic = pygame.image.load('cat.png')
 planet = pygame.image.load('okayplanet.png')
 laser = pygame.image.load('laser.jpg')
 background = pygame.image.load('space.png')
 chargedKitty = pygame.image.load('catbeam.png')
 antiKitty = pygame.image.load('catnegbeam.png')
-laserMod = pygame.transform.scale(laser, (2000,20 + kitCharge))
 
 font1 = pygame.font.SysFont(None, 48)
 
-kitRect = kitty.get_rect()
-laserRect = laserMod.get_rect()
 windowSurface.fill(BACKGROUNDCOLOR)
 windowSurface.blit(background, (0,0))
-
-kitty = pygame.image.load('cat.png')
-planet = pygame.image.load('okayplanet.png')
-laser = pygame.image.load('laser.jpg')
-background = pygame.image.load('space.png')
-chargedKitty = pygame.image.load('catbeam.png')
-antiKitty = pygame.image.load('catnegbeam.png')
-laserMod = pygame.transform.scale(laser, (2000,20 + kitCharge))
 
 font1 = pygame.font.SysFont(None, 48)
 
@@ -65,32 +49,78 @@ def waitKey():
                     terminate()
                 return
 
-def chargeKitty(kitRect, kitCharge):
-    chargedCat = pygame.transform.scale(chargedKitty, (kitRect.width + kitCharge, kitRect.height + kitCharge))
-    chargeCatRect = chargedCat.get_rect()
-    chargeCatRect.center = kitRect.center
-    windowSurface.blit(chargedCat, chargeCatRect)
-    #for cooldown:
-    chargedNegCat = pygame.transform.scale(antiKitty, (kitRect.width + kitNegCharge, kitRect.height + kitNegCharge))
-    chargeNegCatRect = chargedNegCat.get_rect()
-    chargeNegCatRect.center = kitRect.center
-    windowSurface.blit(chargedNegCat, chargeNegCatRect)
+class kitty:
+    def __init__(self):
+        self.laserdis = 50
+        self.kitMove = 15
+        self.laserFire = False
+        self.kitCharge = 0
+        self.kitNegCharge = 0
+        self.laserMod = pygame.transform.scale(laser, (2000,20 + self.kitCharge))
+        self.laserMod = pygame.transform.scale(laser, (2000,20 + self.kitCharge))
+        self.kitRect = kittyPic.get_rect()
+        self.laserRect = self.laserMod.get_rect()
+
+    def chargeKitty(self):
+        kitRect = self.kitRect
+        kitCharge = self.kitCharge
+        chargedCat = pygame.transform.scale(chargedKitty, (kitRect.width + kitCharge, kitRect.height + kitCharge))
+        chargeCatRect = chargedCat.get_rect()
+        chargeCatRect.center = kitRect.center
+        windowSurface.blit(chargedCat, chargeCatRect)
+        #for cooldown:
+        chargedNegCat = pygame.transform.scale(antiKitty, (kitRect.width + self.kitNegCharge, kitRect.height + self.kitNegCharge))
+        chargeNegCatRect = chargedNegCat.get_rect()
+        chargeNegCatRect.center = kitRect.center
+        windowSurface.blit(chargedNegCat, chargeNegCatRect)
+
+    def kittyMove(self):
+        kitRect = self.kitRect
+        laserdis = self.laserdis
+        laserRect = self.laserRect
+        kitMove = self.kitMove
+        if moveUp and kitRect.top+laserdis+(laserRect.height) < WINDOWHEIGHT and True:
+            kitRect.move_ip(0, kitMove)
+        if moveDown and kitRect.top > -laserdis and True:
+    ##            laserRect.move_ip(0, -kitMove)
+            self.kitRect.move_ip(0, -kitMove)
+    def splazers(self, planets):
+        global score
+        kitCharge = self.kitCharge
+        if self.laserFire == True and self.kitCharge > -20:
+            kitCharge-=5
+            if kitCharge >= 0:
+                tempPlanets = len(planets)
+                planets = kit.lasers(planets)
+                planetAddCounter = tempPlanets - len(planets)
+                score += tempPlanets - len(planets)
+                
+                         
+        if self.laserFire == False:
+            if self.kitCharge < 100:
+                self.kitCharge += 2
+                self.kitnegCharge = 0
+    def center(self):
+        self.kitRect.center = (0 + (self.kitRect.right-self.kitRect.left)/2, WINDOWHEIGHT/2)
   
-def lasers(planetList):
-    laserMod = pygame.transform.scale(laser, (2000,20 + kitCharge))
-    laserRect = laserMod.get_rect()
-    laserRect.top = kitRect.top + laserdis
-    laserRect.left = kitRect.right - 25
-    windowSurface.blit(laserMod, laserRect)
-    for p in planetList:   
-        if laserRect.colliderect(p['rect']):
-            p['rect'] = p['rect'].inflate(-kitCharge/2,-kitCharge/2)
-            p['size'] = p['size']-kitCharge/2
-            if(p['size'] <= 0):
-                planetList.remove(p)
-            else:
-                p['surface'] = pygame.transform.scale(planet, (p['size'],p['size']))
-    return planetList
+    def lasers(self, planetList):
+        kitCharge = self.kitCharge
+        kitRect = self.kitRect
+        laserdis = self.laserdis
+        laserMod = pygame.transform.scale(laser, (2000,20 + kitCharge))
+        laserRect = laserMod.get_rect()
+        laserRect.top = kitRect.top + laserdis
+        laserRect.left = kitRect.right - 25
+        windowSurface.blit(laserMod, laserRect)
+        for p in planetList:   
+            if laserRect.colliderect(p['rect']):
+                p['rect'] = p['rect'].inflate(-kitCharge/2,-kitCharge/2)
+                p['size'] = p['size']-kitCharge/2
+                if(p['size'] <= 0):
+                    planetList.remove(p)
+                else:
+                    p['surface'] = pygame.transform.scale(planet, (p['size'],p['size']))
+        return planetList
 
 def drawText(text, font, surface, x, y):
     textobj = font.render(text, 1, TEXTCOLOR)
@@ -130,12 +160,7 @@ def genPlanets(planetList):
         planetList.append(newPlanet)
     return planetList
 
-def kittyMove():
-    if moveUp and kitRect.top+laserdis+(laserRect.height) < WINDOWHEIGHT and True:
-        kitRect.move_ip(0, kitMove)
-    if moveDown and kitRect.top > -laserdis and True:
-##            laserRect.move_ip(0, -kitMove)
-        kitRect.move_ip(0, -kitMove)
+
 
 def planetChecker():
     global EarthHealth
@@ -147,12 +172,8 @@ def planetChecker():
             planets.remove(p)
             EarthHealth -= p['size']/10
 
-def redraw():
-    global kitRect
-    global kitCharge
-    global EarthHealth
-    global kitty
-    global windo
+def redraw(kit):
+    global window
     windowSurface.fill(BACKGROUNDCOLOR)
     windowSurface.blit(background, (0,0))
     
@@ -162,8 +183,8 @@ def redraw():
     for p in planets:
         windowSurface.blit(p['surface'], p['rect'])
         
-    chargeKitty(kitRect, kitCharge)
-    windowSurface.blit(kitty, kitRect)
+    kit.chargeKitty()
+    windowSurface.blit(kittyPic, kit.kitRect)
     
     pygame.display.update()
 
@@ -176,27 +197,8 @@ def earthChecker():
         EarthHealth = 100
         earthDead()
 
-def splazers():
-    global laserFire
-    global kitCharge
-    global planets
-    global score
-    if laserFire == True and kitCharge > -20:
-        kitCharge-=5
-        if kitCharge >= 0:
-            tempPlanets = len(planets)
-            planets = lasers(planets)
-            planetAddCounter = tempPlanets - len(planets)
-            score += tempPlanets - len(planets)
-            
-                     
-    if laserFire == False:
-        if kitCharge < 100:
-            kitCharge += 2
-            kitnegCharge = 0
-            
-kitRect = kitty.get_rect()
-laserRect = laserMod.get_rect()
+# kitRect = kitty.get_rect()
+# laserRect = laserMod.get_rect()
 windowSurface.fill(BACKGROUNDCOLOR)
 windowSurface.blit(background, (0,0))
 
@@ -206,10 +208,10 @@ drawText("duty to protect all Earthlings from the evil planets.", font1, windowS
 drawText("PRESS ANY KEY TO BEGIN THE DEFENSE.", font1, windowSurface, (WINDOWWIDTH/8), (WINDOWHEIGHT / 3)+150)
 pygame.display.update()
 waitKey()
-    
+kit = kitty()
 while True:
 
-    kitRect.center = (0 + (kitRect.right-kitRect.left)/2, WINDOWHEIGHT/2)
+    kit.center()
     
     moveLeft = moveRight = moveUp = moveDown = False
     planetAddCounter = 5
@@ -226,7 +228,7 @@ while True:
                     moveDown = True
                     moveUp = False
                 if event.key == K_SPACE:
-                    laserFire = True
+                    kit.laserFire = True
             if event.type == KEYUP:
                 if event.key == K_ESCAPE:
                     drawText('press any key to unpause', font1, windowSurface, (WINDOWWIDTH /3), (WINDOWHEIGHT / 3))
@@ -240,19 +242,17 @@ while True:
                     moveUp = False
                     moveDown = False
                 if event.key == K_SPACE:
-                    laserFire = False
+                    kit.laserFire = False
 
         planets = genPlanets(planets)
         
-        kittyMove()
+        kit.kittyMove()
 
         planetChecker()
-               
-        
 
         earthChecker()
         
-        splazers()
+        kit.splazers(planets)
 
-        redraw()
+        redraw(kit)
         
