@@ -84,16 +84,22 @@ def redraw(kit, bear, planets):
     #draw text
     drawText('Score: %s' % (globalDefs.score), font1, windowSurface, 10, 0)
     drawText('Earth Health: %s' % (globalDefs.EarthHealth), font1, windowSurface, 10, 48)
+    drawText('spaceCat Health: %s' % (kit.health), font1, windowSurface, 10, 96)
+    # drawText('spaceBear Health: %s' % (bear.health), font1, windowSurface, 10, 144)
     for p in globalDefs.planets:
         windowSurface.blit(p['surface'], p['rect'])
         
     kit.chargeKitty(windowSurface)
-    beary.chargeBear(windowSurface)
     windowSurface.blit(kit.kittyPic, kit.kitRect)
-    windowSurface.blit(beary.BearPic, beary.bearRect)
-
     kit.splazers(windowSurface, planets)
-    beary.splazers(windowSurface, planets)
+
+    if (beary.isSummoned()):
+        beary.chargeBear(windowSurface)
+        windowSurface.blit(beary.BearPic, beary.bearRect)
+
+        beary.splazers(windowSurface, planets)
+
+
     pygame.display.update()
 
     earthHealthIncrementer()
@@ -137,6 +143,20 @@ def eventChecker(event, kit):
         if event.key == K_SPACE:
             kit.laserFire = False
 
+def scoreChecker():
+    if (globalDefs.score > 100):
+        globalDefs.score -= 100
+        beary.summon()
+        kit.health = 100
+        for i in globalDefs.planets[:]:
+            globalDefs.planets.remove(i)
+
+def laserColDet(kit, beary):
+    if kit.laserRect.colliderect(beary.bearRect) & kit.laserFire == True:
+        beary.health -= kit.kitCharge/100.
+    if beary.laserRect.colliderect(kit.kitRect) & beary.laserFire == True:
+        kit.health -= beary.bearCharge/100.
+
 windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
 windowSurface.blit(globalDefs.background, (0,0))
 
@@ -158,13 +178,15 @@ while True:
     
     kit.kittyMove()
 
-    beary.BearMove()
+    beary.update()
 
     planetChecker()
 
+    laserColDet(kit, beary)
+
     earthChecker()
 
-    # scoreChecker()
+    scoreChecker()
 
     redraw(kit, beary, globalDefs.planets)
     

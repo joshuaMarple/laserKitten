@@ -4,7 +4,7 @@ import globalDefs
 class bear:
     def __init__(self):
         self.BearPic = pygame.image.load('./res/spacebear.jpg')
-        self.laser = pygame.image.load('./res/laserTest.png')
+        self.laserImg = pygame.image.load('./res/laserTest.png')
         self.chargedBear = pygame.image.load('./res/catbeam.png')
         self.antiBear = pygame.image.load('./res/catnegbeam.png')
         self.laserdis = 50
@@ -12,13 +12,15 @@ class bear:
         self.laserFire = False
         self.bearCharge = 0
         self.bearNegCharge = 0
-        self.laserMod = pygame.transform.scale(self.laser, (2000,20 + self.bearCharge))
-        self.laserMod = pygame.transform.scale(self.laser, (2000,20 + self.bearCharge))
-        self.BearPic = pygame.transform.scale(self.BearPic, (50,50))
+        self.laser = pygame.transform.scale(self.laserImg, (2000,20 + self.bearCharge))
+        # self.laserMod = pygame.transform.scale(self.laser, (2000,20 + self.bearCharge))
+        self.BearPic = pygame.transform.scale(self.BearPic, (200,200))
         self.bearRect = self.BearPic.get_rect()
-        self.laserRect = self.laserMod.get_rect()
+        self.laserRect = self.laser.get_rect()
         self.moveUp = False
         self.moveDown = False
+        self.health = 100
+        self.summoned = False
 
     def chargeBear(self, windowSurface):
         bearRect = self.bearRect
@@ -74,21 +76,29 @@ class bear:
         self.bearRect.center = (globalDefs.WINDOWWIDTH - (self.bearRect.right-self.bearRect.left)/2, globalDefs.WINDOWHEIGHT/2)
   
     def lasers(self, windowSurface, planetList):
-        global planet
-        bearCharge = self.bearCharge
-        bearRect = self.bearRect
-        laserdis = self.laserdis
-        laserMod = pygame.transform.scale(self.laser, (2000,20 + bearCharge))
-        laserRect = laserMod.get_rect()
-        laserRect.top = bearRect.top + laserdis
-        laserRect.right = bearRect.left + 25
-        windowSurface.blit(laserMod, laserRect)
+        self.laser = pygame.transform.scale(self.laserImg, (2000, self.bearCharge))
+        self.laserRect.height = self.bearCharge
+        self.laserRect.top = int(self.bearRect.y)
+        self.laserRect.right = self.bearRect.left
+        windowSurface.blit(self.laser, self.laserRect)
         for p in planetList:   
-            if laserRect.colliderect(p['rect']):
-                p['rect'] = p['rect'].inflate(-bearCharge/2,-bearCharge/2)
-                p['size'] = p['size']-bearCharge/2
+            if self.laserRect.colliderect(p['rect']):
+                p['rect'] = p['rect'].inflate(-self.bearCharge/3,-self.bearCharge/3)
+                p['size'] = p['size']-self.bearCharge/3
                 if(p['size'] <= 0):
                     planetList.remove(p)
                 else:
                     p['surface'] = pygame.transform.scale(globalDefs.planet, (p['size'],p['size']))
         return planetList
+    def isSummoned(self):
+        return self.summoned
+
+    def summon(self):
+        self.summoned = True
+        self.health = 100
+
+    def update(self):
+        if (self.summoned):
+            self.BearMove()
+        if (self.health < 0):
+            self.summoned = False
