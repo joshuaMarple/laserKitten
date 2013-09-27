@@ -10,7 +10,7 @@ pygame.display.set_caption('Kitten Lasers')
 pygame.mouse.set_visible(False)
 windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
 windowSurface.blit(globalDefs.background, (0,0))
-font1 = pygame.font.SysFont(None, 48)
+font1 = pygame.font.Font("./res/manteka.ttf", 30)
 # font1 = pygame.font.SysFont(None, 48)
 
 def terminate():
