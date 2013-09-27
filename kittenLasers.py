@@ -21,6 +21,7 @@ score = 0
 EarthHealth = 100
 kitCharge = 0
 kitNegCharge = 0
+healthCounter = 0
 
 def terminate():
     pygame.quit()
@@ -153,7 +154,10 @@ while True:
                 planetAddCounter+=1
                 EarthHealth -= p['size']/10
             
-               
+        healthCounter+=1
+        if healthCounter > 20:
+            EarthHealth += 1
+            healthCounter = 0
         windowSurface.fill(BACKGROUNDCOLOR)
         windowSurface.blit(background, (0,0))
         chargeKitty(kitRect, kitCharge)
