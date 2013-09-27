@@ -172,7 +172,7 @@ def planetChecker():
             planets.remove(p)
             EarthHealth -= p['size']/10
 
-def redraw(kit):
+def redraw(kit, planets):
     global window
     windowSurface.fill(BACKGROUNDCOLOR)
     windowSurface.blit(background, (0,0))
@@ -185,7 +185,7 @@ def redraw(kit):
         
     kit.chargeKitty()
     windowSurface.blit(kittyPic, kit.kitRect)
-    
+    kit.splazers(planets)
     pygame.display.update()
 
 
@@ -245,6 +245,8 @@ while True:
                     kit.laserFire = False
 
         planets = genPlanets(planets)
+
+
         
         kit.kittyMove()
 
@@ -252,7 +254,7 @@ while True:
 
         earthChecker()
         
-        kit.splazers(planets)
+       
 
-        redraw(kit)
+        redraw(kit, planets)
         
