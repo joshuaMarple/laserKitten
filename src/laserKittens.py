@@ -3,6 +3,7 @@ from pygame.locals import *
 import globalDefs
 from kitty import *
 from bear import *
+from music import *
 pygame.init()
 mainClock = pygame.time.Clock()
 windowSurface = pygame.display.set_mode((globalDefs.WINDOWWIDTH, globalDefs.WINDOWHEIGHT))
@@ -12,6 +13,8 @@ windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
 windowSurface.blit(globalDefs.background, (0,0))
 font1 = pygame.font.Font("./res/manteka.ttf", 30)
 # font1 = pygame.font.SysFont(None, 48)
+muse = music()
+muse.levelSong()
 
 def terminate():
     pygame.quit()
@@ -34,11 +37,11 @@ def drawText(text, font, surface, x, y):
     textrect.topleft = (x,y)
     surface.blit(textobj, textrect)
 
-def earthDead():
-    drawText('EARTH IS DESTROYED!', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
-    drawText('YOU HAVE FAILED US, LASERKITTEN.', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
-    pygame.display.update()
-    waitKey()
+def clearScreen():
+    windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
+    windowSurface.blit(globalDefs.background, (0,0))
+
+def restart():
     windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
     windowSurface.blit(globalDefs.background, (0,0))
     drawText('Press Enter for a new game', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
@@ -52,9 +55,26 @@ def earthDead():
     kitCharge = 0
     globalDefs.score = 0
 
+def earthDead():
+    clearScreen()
+    drawText('EARTH IS DESTROYED!', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
+    drawText('YOU HAVE FAILED US, LASERKITTEN.', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
+    pygame.display.update()
+    waitKey()
+    restart()
+
+def kitDead():
+    kit.health = 100
+    clearScreen()
+    drawText('LASERKITTEN IS DEAD', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
+    drawText('GOD HELP US ALL', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
+    pygame.display.update()
+    waitKey()
+    restart()
+
 def genPlanets(planetList):
     randomPlanet = random.random()
-    if randomPlanet >= (.98 - (globalDefs.score/1000.)):
+    if randomPlanet >= (.98 - ((globalDefs.score % 100)/1000.)):
         planetSize = random.randint(20, 200)+globalDefs.score/100
         newPlanet = {'size':planetSize,
                     'rect': pygame.Rect(globalDefs.WINDOWWIDTH - planetSize
@@ -144,17 +164,25 @@ def eventChecker(event, kit):
             kit.laserFire = False
 
 def scoreChecker():
-    if (globalDefs.score > 100):
-        globalDefs.score -= 100
-        beary.summon()
-        kit.health = 100
-        for i in globalDefs.planets[:]:
-            globalDefs.planets.remove(i)
+    if (globalDefs.score > 1):
+        if (globalDefs.score % 100 == 0):
+            globalDefs.score += 1
+            beary.summon()
+            kit.health = 100
+            beary.health = 100
+            for i in globalDefs.planets[:]:
+                globalDefs.planets.remove(i)
 
 def laserColDet(kit, beary):
-    if kit.laserRect.colliderect(beary.bearRect) & kit.laserFire == True:
+    # print "kit" + str(kit.laserRect.left) + " | " + str(kit.laserRect.right) + " | " + str(kit.laserRect.top)
+
+    if kit.laserRect.colliderect(beary.bearRect) & kit.laserFire == True & beary.isSummoned() == True:
+        print "made it to kitten collision"
+        print kit.kitCharge/10
         beary.health -= kit.kitCharge/100.
+        print beary.health
     if beary.laserRect.colliderect(kit.kitRect) & beary.laserFire == True:
+        print "made it to bear collision"
         kit.health -= beary.bearCharge/100.
 
 windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
@@ -170,13 +198,15 @@ kit = kitty()
 kit.center()
 beary = bear()
 beary.center()
+kitOptions = {"dead", kitDead}
 while True:
     for event in pygame.event.get():
         eventChecker(event, kit)
 
     globalDefs.planets = genPlanets(globalDefs.planets)
-    
-    kit.kittyMove()
+    if (kit.update() == "dead"):
+        kitDead()
+    # kitOptions[]()
 
     beary.update()
 

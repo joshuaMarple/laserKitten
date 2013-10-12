@@ -3,7 +3,7 @@ from pygame.locals import *
 import globalDefs
 class bear:
     def __init__(self):
-        self.BearPic = pygame.image.load('./res/spacebear.jpg')
+        self.BearPic = pygame.image.load('./res/spazburr.png')
         self.laserImg = pygame.image.load('./res/laserTest.png')
         self.chargedBear = pygame.image.load('./res/catbeam.png')
         self.antiBear = pygame.image.load('./res/catnegbeam.png')
@@ -90,8 +90,13 @@ class bear:
                 else:
                     p['surface'] = pygame.transform.scale(globalDefs.planet, (p['size'],p['size']))
         return planetList
+
     def isSummoned(self):
         return self.summoned
+
+    def expunge(self):
+        self.summoned = False
+        self.laserFire = False
 
     def summon(self):
         self.summoned = True
@@ -100,5 +105,5 @@ class bear:
     def update(self):
         if (self.summoned):
             self.BearMove()
-        if (self.health < 0):
-            self.summoned = False
+            if(self.health < 0):
+                self.expunge()

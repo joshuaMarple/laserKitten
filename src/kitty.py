@@ -36,6 +36,11 @@ class kitty:
         self.moveUp = moveUp
         self.moveDown = moveDown
 
+    def update(self):
+        self.kittyMove()
+        if (self.health < 0):
+            return "dead"
+
     def kittyMove(self):
         if self.moveUp and self.kitRect.top+self.laserdis+(self.laserRect.height) < globalDefs.WINDOWHEIGHT:
             self.kitRect.move_ip(0, self.kitMove)
