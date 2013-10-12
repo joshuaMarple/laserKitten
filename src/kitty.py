@@ -8,7 +8,7 @@ class kitty:
         self.chargedKitty = pygame.image.load('./res/catbeam.png')
         self.antiKitty = pygame.image.load('./res/catnegbeam.png')
         self.laserdis = 0
-        self.kitMove = 15
+        self.kitMove = 25
         self.laserFire = False
         self.kitCharge = 0
         self.kitNegCharge = 0

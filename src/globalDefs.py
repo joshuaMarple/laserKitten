@@ -17,3 +17,4 @@ planetAddCounter = 5
 planet = pygame.image.load('./res/okayplanet.png')
 background = pygame.transform.scale(pygame.image.load('./res/space.png'), (WINDOWWIDTH, WINDOWHEIGHT))
 earthHealthCounter = 0
+# background = pygame.transform.scale(background, (newW, newH))
