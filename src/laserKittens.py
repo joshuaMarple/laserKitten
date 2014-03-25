@@ -10,17 +10,19 @@ def startGame():
     mainClock = pygame.time.Clock()
 
     windowSurface = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
+    # windowSurface = pygame.display.set_mode((1000,700))
     globalDefs.WINDOWWIDTH = pygame.display.Info().current_w
     globalDefs.WINDOWHEIGHT = pygame.display.Info().current_h
-    globalDefs.background = pygame.transform.scale(globalDefs.background, (globalDefs.WINDOWWIDTH, globalDefs.WINDOWHEIGHT))
+    planet = pygame.image.load('./res/okayplanet.png').convert_alpha()
+    background = pygame.transform.scale(pygame.image.load('./res/space.png').convert_alpha(), (globalDefs.WINDOWWIDTH, globalDefs.WINDOWHEIGHT))
+    globalDefs.background = pygame.transform.scale(background, (globalDefs.WINDOWWIDTH, globalDefs.WINDOWHEIGHT))
     pygame.display.set_caption('Kitten Lasers')
     pygame.mouse.set_visible(False)
     windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
     windowSurface.blit(globalDefs.background, (0,0))
-    font1 = pygame.font.Font("./res/manteka.ttf", 30)
-    # font1 = pygame.font.SysFont(None, 48)
-    muse = music()
-    muse.levelSong()
+    font = pygame.font.Font("./res/manteka.ttf", 30)
+    # muse = music()
+    # muse.levelSong()
 
     def terminate():
         pygame.quit()
@@ -50,8 +52,8 @@ def startGame():
     def restart():
         windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
         windowSurface.blit(globalDefs.background, (0,0))
-        drawText('Press Enter for a new game', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
-        drawText('Maybe you won\'t suck so hard this time', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
+        drawText('Press Enter for a new game', font, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
+        drawText('Maybe you won\'t suck so hard this time', font, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
         pygame.display.update()
         waitKey()
         for i in globalDefs.planets[:]:
@@ -63,8 +65,8 @@ def startGame():
 
     def earthDead():
         clearScreen()
-        drawText('EARTH IS DESTROYED!', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
-        drawText('YOU HAVE FAILED US, LASERKITTEN.', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
+        drawText('EARTH IS DESTROYED!', font, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
+        drawText('YOU HAVE FAILED US, LASERKITTEN.', font, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
         pygame.display.update()
         waitKey()
         restart()
@@ -72,8 +74,8 @@ def startGame():
     def kitDead():
         kit.health = 100
         clearScreen()
-        drawText('LASERKITTEN IS DEAD', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
-        drawText('GOD HELP US ALL', font1, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
+        drawText('LASERKITTEN IS DEAD', font, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3))
+        drawText('GOD HELP US ALL', font, windowSurface, (globalDefs.WINDOWWIDTH /8), (globalDefs.WINDOWHEIGHT / 3) + 50)
         pygame.display.update()
         waitKey()
         restart()
@@ -86,7 +88,7 @@ def startGame():
                         'rect': pygame.Rect(globalDefs.WINDOWWIDTH - planetSize
                                              , random.randint(0, globalDefs.WINDOWHEIGHT-planetSize+globalDefs.score/10), planetSize, planetSize),
                          'speed': random.randint(globalDefs.planetMoveMin, globalDefs.planetMoveMax+globalDefs.score/100),
-                         'surface':pygame.transform.scale(globalDefs.planet, (planetSize, planetSize)), }
+                         'surface':pygame.transform.scale(planet, (planetSize, planetSize)), }
 
             planetList.append(newPlanet)
         return planetList
@@ -102,16 +104,16 @@ def startGame():
                 globalDefs.planets.remove(p)
                 globalDefs.EarthHealth -= p['size']/10
 
-    def redraw(kit, bear, planets, corgi):
+    def redraw(kit, bear, planets):
         global window
         windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
         windowSurface.blit(globalDefs.background, (0,0))
         
         #draw text
-        drawText('Score: %s' % (globalDefs.score), font1, windowSurface, 10, 0)
-        drawText('Earth Health: %s' % (globalDefs.EarthHealth), font1, windowSurface, 10, 48)
-        drawText('spaceCat Health: %s' % (kit.health), font1, windowSurface, 10, 96)
-        # drawText('spaceBear Health: %s' % (bear.health), font1, windowSurface, 10, 144)
+        drawText('Score: %s' % (globalDefs.score), font, windowSurface, 10, 0)
+        drawText('Earth Health: %s' % (globalDefs.EarthHealth), font, windowSurface, 10, 48)
+        drawText('spaceCat Health: %s' % (kit.health), font, windowSurface, 10, 96)
+        # drawText('spaceBear Health: %s' % (bear.health), font, windowSurface, 10, 144)
         for p in globalDefs.planets:
             windowSurface.blit(p['surface'], p['rect'])
             
@@ -125,8 +127,8 @@ def startGame():
 
             beary.splazers(windowSurface, planets)
 
-        windowSurface.blit(corgi.image, corgi.rect)
-        corg.update(kit.kitRect, windowSurface)
+        # windowSurface.blit(corgi.image, corgi.rect)
+        # corg.update(kit.kitRect, windowSurface)
         # corg.rockets.update(windowSurface)
         pygame.display.update()
 
@@ -158,8 +160,8 @@ def startGame():
                 kit.laserFire = True
         if event.type == KEYUP:
             if event.key == K_ESCAPE:
-                drawText('press enter to unpause', font1, windowSurface, (globalDefs.WINDOWWIDTH /3), (globalDefs.WINDOWHEIGHT / 3))
-                drawText('press esc again to exit', font1, windowSurface, (globalDefs.WINDOWWIDTH /3), (globalDefs.WINDOWHEIGHT / 3) + 50)
+                drawText('press enter to unpause', font, windowSurface, (globalDefs.WINDOWWIDTH /3), (globalDefs.WINDOWHEIGHT / 3))
+                drawText('press esc again to exit', font, windowSurface, (globalDefs.WINDOWWIDTH /3), (globalDefs.WINDOWHEIGHT / 3) + 50)
                 pygame.display.update()
                 waitKey()
             if event.key == K_UP:
@@ -182,31 +184,25 @@ def startGame():
                     globalDefs.planets.remove(i)
 
     def laserColDet(kit, beary):
-        # print "kit" + str(kit.laserRect.left) + " | " + str(kit.laserRect.right) + " | " + str(kit.laserRect.top)
-
         if kit.laserRect.colliderect(beary.bearRect) & kit.laserFire == True & beary.isSummoned() == True:
-            print "made it to kitten collision"
-            print kit.kitCharge/10
             beary.health -= kit.kitCharge/100.
-            print beary.health
         if beary.laserRect.colliderect(kit.kitRect) & beary.laserFire == True:
-            print "made it to bear collision"
             kit.health -= beary.bearCharge/100.
 
     windowSurface.fill(globalDefs.BACKGROUNDCOLOR)
     windowSurface.blit(globalDefs.background, (0,0))
 
-    drawText('KITTEN LASERS!', font1, windowSurface, (globalDefs.WINDOWWIDTH /3), (globalDefs.WINDOWHEIGHT / 3))
-    drawText("Protector of Earth. LaserCat has made it his sworn", font1, windowSurface, (globalDefs.WINDOWWIDTH/8), (globalDefs.WINDOWHEIGHT / 3) + 50)
-    drawText("duty to protect all Earthlings from the evil planets.", font1, windowSurface, (globalDefs.WINDOWWIDTH/8), (globalDefs.WINDOWHEIGHT / 3)+ 100)
-    drawText("PRESS ENTER TO BEGIN THE DEFENSE.", font1, windowSurface, (globalDefs.WINDOWWIDTH/8), (globalDefs.WINDOWHEIGHT / 3)+150)
+    drawText('KITTEN LASERS!', font, windowSurface, (globalDefs.WINDOWWIDTH /3), (globalDefs.WINDOWHEIGHT / 3))
+    drawText("Protector of Earth. LaserCat has made it his sworn", font, windowSurface, (globalDefs.WINDOWWIDTH/8), (globalDefs.WINDOWHEIGHT / 3) + 50)
+    drawText("duty to protect all Earthlings from the evil planets.", font, windowSurface, (globalDefs.WINDOWWIDTH/8), (globalDefs.WINDOWHEIGHT / 3)+ 100)
+    drawText("PRESS ENTER TO BEGIN THE DEFENSE.", font, windowSurface, (globalDefs.WINDOWWIDTH/8), (globalDefs.WINDOWHEIGHT / 3)+150)
     pygame.display.update()
     waitKey()
     kit = kitty()
     kit.center()
     beary = bear()
     beary.center()
-    corg = Corgi()
+    # corg = Corgi()
     kitOptions = {"dead", kitDead}
     while True:
         for event in pygame.event.get():
@@ -215,13 +211,11 @@ def startGame():
         globalDefs.planets = genPlanets(globalDefs.planets)
         if (kit.update() == "dead"):
             kitDead()
-        # kitOptions[]()
 
         beary.update()
 
         planetChecker()
-
-        
+ 
 
         laserColDet(kit, beary)
 
@@ -229,5 +223,5 @@ def startGame():
 
         scoreChecker()
 
-        redraw(kit, beary, globalDefs.planets, corg)
+        redraw(kit, beary, globalDefs.planets)
         

@@ -3,10 +3,10 @@ from pygame.locals import *
 import globalDefs
 class kitty:
     def __init__(self):
-        self.kittyPic = pygame.image.load('./res/cat.png')
-        self.laserImg = pygame.image.load('./res/laser.png')
-        self.chargedKitty = pygame.image.load('./res/catbeam.png')
-        self.antiKitty = pygame.image.load('./res/catnegbeam.png')
+        self.kittyPic = pygame.image.load('./res/cat.png').convert_alpha()
+        self.laserImg = pygame.image.load('./res/laser.png').convert_alpha()
+        self.chargedKitty = pygame.image.load('./res/catbeam.png').convert_alpha()
+        self.antiKitty = pygame.image.load('./res/catnegbeam.png').convert_alpha()
         self.laserdis = 0
         self.kitMove = 25
         self.laserFire = False
@@ -61,6 +61,7 @@ class kitty:
             if self.kitCharge < 100:
                 self.kitCharge += 2
                 self.kitnegCharge = 0
+                
     def center(self):
         self.kitRect.center = (0 + (self.kitRect.right-self.kitRect.left)/2, globalDefs.WINDOWHEIGHT/2)
   
@@ -77,5 +78,5 @@ class kitty:
                 if(p['size'] <= 0):
                     planetList.remove(p)
                 else:
-                    p['surface'] = pygame.transform.scale(globalDefs.planet, (p['size'],p['size']))
+                    p['surface'] = pygame.transform.scale(p['surface'], (p['size'],p['size']))
         return planetList
